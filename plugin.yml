@@ -1,0 +1,28 @@
+name: Economy
+main: main.pluginMain
+description: Economy Project
+version: 1.10
+authors: [SMD_SSG_PJ, Catallena_]
+commands:
+  money:
+    description: See your money, or other player's money
+    usage: /money -or- /money [player]
+  givemoney:
+    description: Give money
+    usage: /givemoney [player] [amount]
+  takemoney:
+    description: Take money
+    usage: /takemoney [player] [amount]
+  paymoney:
+    description: Pay money
+    usage: /paymoney [player] [amount]
+  cash:
+    description: See your cash
+    usage: /cash
+  givecash:
+    description: Give cash
+    usage: /givecash [player] [amount]
+  takecash:
+    description: Take cash
+    usage: /takecash [player] [amount]
+  
