@@ -23,8 +23,8 @@ commands:
     description: Remove home information.
   rh:
     description: Shortcut for /removehome.
-  locationhome:
-    description: Show information of your home.
+  listhome:
+    description: Show list of your sethome.
   lh:
     description: Shortcut for /locationhome
   warp:

@@ -32,6 +32,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
@@ -211,7 +213,7 @@ public class pluginMain extends JavaPlugin implements Listener {
 						exception.printStackTrace();
 					}
 					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Sethome " + ChatColor.YELLOW
-							+ plw + ChatColor.YELLOW + " complete.");
+							+ plw + ChatColor.GRAY + " complete.");
 					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "At location " + ChatColor.GREEN
 							+ "X: " + x + ChatColor.AQUA + " Y:" + y + ChatColor.YELLOW + " Z:" + z
 							+ ChatColor.LIGHT_PURPLE + " at World " + ChatColor.GOLD + plw);
@@ -225,6 +227,9 @@ public class pluginMain extends JavaPlugin implements Listener {
 					double plyaw = pl.getYaw();
 					String plwo = pl.getWorld().getName();
 					String plw = args[0];
+					double x = Math.floor(plx);
+					double y = Math.floor(ply);
+					double z = Math.floor(plz);
 					try {
 						playerData.createSection("home");
 						playerData.set("home." + plw, plw);
@@ -240,13 +245,18 @@ public class pluginMain extends JavaPlugin implements Listener {
 						exception.printStackTrace();
 					}
 					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Sethome " + ChatColor.YELLOW
-							+ plw + ChatColor.YELLOW + " complete.");
+							+ plw + ChatColor.GRAY + " complete.");
 					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "At location " + ChatColor.GREEN
-							+ "X: " + plx + ChatColor.AQUA + " Y:" + ply + ChatColor.YELLOW + " Z:" + plz
+							+ "X: " + x + ChatColor.AQUA + " Y:" + y + ChatColor.YELLOW + " Z:" + z
 							+ ChatColor.LIGHT_PURPLE + " at World" + ChatColor.GOLD + plw);
 					player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
 				}
 
+			} else {
+				// HomeäÁèä´é
+				player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Your " + ChatColor.YELLOW + "PlayerData" + ChatColor.GRAY + " isn't create yet.");
+				player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Please re-login again to make system create your" + ChatColor.YELLOW + " PlayerData.");
+				player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 0);
 			}
 		}
 		// home
@@ -315,31 +325,14 @@ public class pluginMain extends JavaPlugin implements Listener {
 			}
 		}
 		// list location of home
-		if (CommandLabel.equalsIgnoreCase("locationhome") || CommandLabel.equalsIgnoreCase("lh")
-				|| CommandLabel.equalsIgnoreCase("Main:locationhome") || CommandLabel.equalsIgnoreCase("Main:lh")) {
+		if (CommandLabel.equalsIgnoreCase("listhome") || CommandLabel.equalsIgnoreCase("lh")
+				|| CommandLabel.equalsIgnoreCase("Main:listhome") || CommandLabel.equalsIgnoreCase("Main:lh")) {
 			if (f.exists()) {
 				if (playerData.getString("home") != null) {
 					// Homeä´é
-					int x = playerData.getInt("home.x");
-					int y = playerData.getInt("home.y");
-					int z = playerData.getInt("home.z");
-					int pitch = playerData.getInt("home.pitch");
-					int yaw = playerData.getInt("home.yaw");
-					String world = playerData.getString("home.world");
-					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.AQUA + "Home info");
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "World: " + ChatColor.GREEN + world);
-					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "Location: ");
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "  - X: " + ChatColor.GREEN + x);
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "  - Y: " + ChatColor.GREEN + y);
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "  - Z: " + ChatColor.GREEN + z);
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "Yaw: " + ChatColor.GREEN + yaw);
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "Pitch: " + ChatColor.GREEN + pitch);
+					String x = playerData.getString("home");
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.YELLOW + "List of Home(s)");
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GOLD + x);
 				} else {
 					// HomeäÁèä´é
 					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "You didn't sethome yet.");
@@ -352,6 +345,14 @@ public class pluginMain extends JavaPlugin implements Listener {
 		if (CommandLabel.equalsIgnoreCase("removehome") || CommandLabel.equalsIgnoreCase("rh")
 				|| CommandLabel.equalsIgnoreCase("Main:rh") || CommandLabel.equalsIgnoreCase("Main:removehome")) {
 			if (f.exists()) {
+				String p = args[0];
+				if (args[0].isEmpty()) {
+					p = player.getWorld().getName();
+				}
+				else if (!args[0].isEmpty()) {
+					p = args[0];
+				}
+				if (playerData.getString("home." + p) != null) {
 				if (playerData.getString("home") != null) {
 					try {
 						playerData.set("home", null);
@@ -359,11 +360,15 @@ public class pluginMain extends JavaPlugin implements Listener {
 					} catch (IOException exception) {
 						exception.printStackTrace();
 					}
-					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Remove home complete.");
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Remove home " + ChatColor.YELLOW + args[0] + ChatColor.GRAY + " complete.");
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 10, 1);
 				} else {
-					player.sendMessage(
-							ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Couldn't find you home information.");
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Couldn't find your home information.");
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "You need to sethome " + args[0] + " first.");
+					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 1);
+				}
+				} else {
+					player.sendMessage(ChatColor.BLUE + "Portal> " + ChatColor.GRAY + "Couldn't find home" + p);
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BASS, 1, 1);
 				}
 			}
