@@ -1,0 +1,30 @@
+name: SMDMusic_BETA
+main: me.catallena.mcaholic.pluginMain
+description: Make your own song and Share to player in server!
+version: 0.4BETA
+authors: [Catallena_, PondJa]
+commands:
+  musicadmin:
+       description: See list of helping for admin (OP)
+  musicadmin play:
+       description: Play Selected Song (OP)
+       usage: type /musicadmin play <song> (USE _ FOR SPACING)
+  musicadmin random:
+       description: Play Random Song (OP)
+       usage: type /musicadmin random
+  musicadmin list:
+       description: List of available song(s) (OP)
+       usage: type /musicadmin list
+  musicadmin reload:
+       description: Re-loading song(s) from folder (OP) [CURRENTLY DISABLE - BUG]
+       usage: type /musicadmin reload
+  music:
+       description: Toggle between Mute and Unmute Music
+       usage: type /music
+  music info:
+       description: Show currently song's information
+       usage: type /music info
+  music status:
+       description: Check that player mute or unmute
+       usage: type /music status
+  
