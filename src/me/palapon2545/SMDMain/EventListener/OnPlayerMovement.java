@@ -15,14 +15,20 @@ import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.palapon2545.SMDMain.Function.ActionBarAPI;
+import me.palapon2545.SMDMain.Main.pluginMain;
 
-public class OnPlayerMovement extends JavaPlugin implements Listener {
+public class OnPlayerMovement implements Listener {
 	
+	pluginMain pl;
+	public OnPlayerMovement(pluginMain pl) {
+		this.pl = pl;
+	}
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String freeze = playerData.getString("freeze");
@@ -46,7 +52,7 @@ public class OnPlayerMovement extends JavaPlugin implements Listener {
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String freeze = playerData.getString("freeze");
@@ -64,7 +70,7 @@ public class OnPlayerMovement extends JavaPlugin implements Listener {
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String freeze = playerData.getString("freeze");

@@ -10,13 +10,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.palapon2545.SMDMain.Library.Prefix;
+import me.palapon2545.SMDMain.Main.pluginMain;
 
-public class OnPlayerLogin extends JavaPlugin implements Runnable{
+public class OnPlayerLogin implements Runnable{
 	
+	pluginMain pl;
+	public OnPlayerLogin(pluginMain pl) {
+		this.pl = pl;
+	}
+
 	public void run() {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			String playerName = p.getName();
-			File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+			File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 			File f = new File(userdata, File.separator + "config.yml");
 			FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 			String l = playerData.getString("login.freeze");

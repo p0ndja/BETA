@@ -22,19 +22,24 @@ import me.palapon2545.SMDMain.Library.Prefix;
 import me.palapon2545.SMDMain.Library.Rank;
 import me.palapon2545.SMDMain.Main.pluginMain;
 
-public class OnPlayerConnection extends JavaPlugin implements Listener{
+public class OnPlayerConnection implements Listener{
 	
+	pluginMain pl;
+	public OnPlayerConnection(pluginMain pl) {
+		this.pl = pl;
+	}
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		if (!f.exists()) {
 			File userfiles;
 			try {
-				userfiles = new File(getDataFolder() + File.separator + "/PlayerDatabase/" + playerName + "/HomeDatabase");
+				userfiles = new File(pl.getDataFolder() + File.separator + "/PlayerDatabase/" + playerName + "/HomeDatabase");
 				if (!userfiles.exists()) {
 					userfiles.mkdirs();
 				}
@@ -66,10 +71,10 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 				playerData.set("Security.email", "none");
 				playerData.createSection("gamemode");
 				playerData.set("gamemode", 0);
-				getConfig().set("redeem.player." + playerName, "false");
-				getConfig().set("free_item." + playerName, "false");
-				getConfig().set("event.queuelist." + playerName, "false");
-				saveConfig();
+				pl.getConfig().set("redeem.player." + playerName, "false");
+				pl.getConfig().set("free_item." + playerName, "false");
+				pl.getConfig().set("event.queuelist." + playerName, "false");
+				pl.saveConfig();
 				playerData.save(f);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -127,13 +132,13 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			event.setJoinMessage(Prefix.j + RankDisplay + playerName);
 			
 		}
-		String evs = getConfig().getString("event.queuelist." + playerName);
+		String evs = pl.getConfig().getString("event.queuelist." + playerName);
 		if (evs == null || evs.isEmpty()) {
-			getConfig().set("event.queuelist." + playerName, "false");
-			saveConfig();
+			pl.getConfig().set("event.queuelist." + playerName, "false");
+			pl.saveConfig();
 		}
 
-		if (getConfig().getString("login_feature").equalsIgnoreCase("true")) {
+		if (pl.getConfig().getString("login_feature").equalsIgnoreCase("true")) {
 			try {
 				playerData.set("login.freeze", "true");
 				playerData.save(f);
@@ -144,7 +149,7 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			player.setGameMode(GameMode.SPECTATOR);
 		}
 
-		if (getConfig().getString("login_feature").equalsIgnoreCase("false")) {
+		if (pl.getConfig().getString("login_feature").equalsIgnoreCase("false")) {
 			try {
 				playerData.set("login.freeze", "false");
 				playerData.save(f);
@@ -163,7 +168,7 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			Bukkit.broadcastMessage(Prefix.db + Prefix.dbe);
 		}
 
-		File tempFile = new File(getDataFolder() + File.separator + "temp.yml");
+		File tempFile = new File(pl.getDataFolder() + File.separator + "temp.yml");
 		FileConfiguration tempData = YamlConfiguration.loadConfiguration(tempFile);
 		try {
 			tempData.set("chat_last_send." + playerName, null);
@@ -175,18 +180,18 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 		}
 
 		player.sendMessage("");
-		String version = getDescription().getVersion();
+		String version = pl.getDescription().getVersion();
 		player.sendMessage(ChatColor.BOLD + "SMDMain's Patch Version: " + version);
 		player.sendMessage("");
 
-		String spawn = getConfig().getString("spawn");
+		String spawn = pl.getConfig().getString("spawn");
 		if (spawn != null) {
-			Double x = getConfig().getDouble("spawn" + "." + "spawn" + ".x");
-			Double y = getConfig().getDouble("spawn" + "." + "spawn" + ".y");
-			Double z = getConfig().getDouble("spawn" + "." + "spawn" + ".z");
-			float yaw = (float) getConfig().getDouble("spawn" + "." + "spawn" + ".yaw");
-			float pitch = (float) getConfig().getDouble("spawn" + "." + "spawn" + ".pitch");
-			String world = getConfig().getString("spawn" + "." + "spawn" + ".world");
+			Double x = pl.getConfig().getDouble("spawn" + "." + "spawn" + ".x");
+			Double y = pl.getConfig().getDouble("spawn" + "." + "spawn" + ".y");
+			Double z = pl.getConfig().getDouble("spawn" + "." + "spawn" + ".z");
+			float yaw = (float) pl.getConfig().getDouble("spawn" + "." + "spawn" + ".yaw");
+			float pitch = (float) pl.getConfig().getDouble("spawn" + "." + "spawn" + ".pitch");
+			String world = pl.getConfig().getString("spawn" + "." + "spawn" + ".world");
 			World p = Bukkit.getWorld(world);
 			if (p == null) {
 				player.sendMessage(Prefix.pp + "Spawn location not found! (Wrong world)");
@@ -208,7 +213,7 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 	public void onPlayerLeft(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String rank = playerData.getString("rank");
@@ -243,7 +248,7 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			g = 3;
 		}
 
-		File tempFile = new File(getDataFolder() + File.separator + "temp.yml");
+		File tempFile = new File(pl.getDataFolder() + File.separator + "temp.yml");
 		FileConfiguration tempData = YamlConfiguration.loadConfiguration(tempFile);
 		try {
 			tempData.set("chat_last_send." + playerName, null);
@@ -254,9 +259,9 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			Bukkit.broadcastMessage(Prefix.db + Prefix.dbe);
 		}
 
-		getConfig().set("event.queuelist." + playerName, "false");
-		getConfig().set("gamemode." + playerName, g);
-		saveConfig();
+		pl.getConfig().set("event.queuelist." + playerName, "false");
+		pl.getConfig().set("gamemode." + playerName, g);
+		pl.saveConfig();
 		int n = Bukkit.getServer().getOnlinePlayers().size();
 		if (n == 0 || n < 0) {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
@@ -264,4 +269,5 @@ public class OnPlayerConnection extends JavaPlugin implements Listener{
 			return;
 		}
 	}
+
 }

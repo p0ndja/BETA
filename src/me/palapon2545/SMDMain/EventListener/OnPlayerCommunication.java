@@ -19,17 +19,22 @@ import me.palapon2545.SMDMain.Library.Prefix;
 import me.palapon2545.SMDMain.Library.Rank;
 import me.palapon2545.SMDMain.Main.pluginMain;
 
-public class OnPlayerCommunication extends JavaPlugin implements Listener {
+public class OnPlayerCommunication implements Listener {
+
+	pluginMain pl;
+	public OnPlayerCommunication(pluginMain pl) {
+		this.pl = pl;
+	}
 
 	@EventHandler
-	public void PlayerChatEvent(AsyncPlayerChatEvent event) {
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		String message = event.getMessage();
 		String message2 = message.replaceAll("%", "%%");
 		String messagem = message2.replaceAll("&", Prefix.Ampersand);
 		String message1 = " " + messagem;
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String rank = playerData.getString("rank");
@@ -82,7 +87,7 @@ public class OnPlayerCommunication extends JavaPlugin implements Listener {
 	public void PlayerPerformedCommand_StatePreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
-		File userdata = new File(getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
+		File userdata = new File(pl.getDataFolder(), File.separator + "PlayerDatabase/" + playerName);
 		File f = new File(userdata, File.separator + "config.yml");
 		FileConfiguration playerData = YamlConfiguration.loadConfiguration(f);
 		String freeze = playerData.getString("freeze");

