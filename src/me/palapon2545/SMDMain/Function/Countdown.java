@@ -1,0 +1,176 @@
+package me.palapon2545.SMDMain.Function;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import me.palapon2545.SMDMain.Library.Prefix;
+import me.palapon2545.SMDMain.Library.StockInt;
+import me.palapon2545.SMDMain.Function.BossBar;
+
+public class Countdown extends JavaPlugin implements Runnable{
+
+	boolean CountdownDisplayMessageBoolean = false;
+	
+	public void run() {
+		long c = StockInt.CountdownLength;
+		long n = c - 1;
+		long value = c;
+		long h = value / 3600;
+		long m = value % 3600;
+		long s = m % 60;
+		if (StockInt.CountdownMessage == null) {
+			CalculateTimer();
+		} else {
+			if (s % 4 == 0) {
+				if (c < 11) {
+					CountdownDisplayMessageBoolean = false;
+				} else {
+					if (CountdownDisplayMessageBoolean == true) {
+						CountdownDisplayMessageBoolean = false;
+					} else {
+						CountdownDisplayMessageBoolean = true;
+					}
+				}
+			}
+			if (CountdownDisplayMessageBoolean == true) {
+				if (StockInt.BarAPIHook == true) {
+					// long p = cn / an;
+					// Bukkit.broadcastMessage("debug_percent");
+					BossBar.sendBarAll(Prefix.cd + StockInt.CountdownMessage);
+				} else {
+					ActionBarAPI.sendToAll(Prefix.cd + StockInt.CountdownMessage);
+				}
+			} else {
+				CalculateTimer();
+			}
+		}
+		if (c == -1) {
+			StockInt.CountdownLength = -1;
+		} else {
+			StockInt.CountdownLength = n;
+		}
+	}
+	
+	public void CalculateTimer() {
+		File countdownFile = new File(getDataFolder() + File.separator + "countdown.yml");
+		FileConfiguration countdownData = YamlConfiguration.loadConfiguration(countdownFile);
+		long c = countdownData.getLong("count");
+		long w = c / 604800;
+		long wm = c % 604800;
+		long d = wm / 86400;
+		long dm = wm % 86400;
+		long h = dm / 3600;
+		long hm = dm % 3600;
+		long m = hm / 60;
+		long s = hm % 60;
+		String week = "";
+		String day = "";
+		String hour = "";
+		String minute = "";
+		String second = "";
+
+		if (w > 1) {
+			week = w + " weeks ";
+		}
+		if (w == 1) {
+			week = w + " week ";
+		}
+		if (w == 0) {
+			week = "";
+		}
+
+		if (w > 1) {
+			week = w + " weeks ";
+		}
+		if (w == 1) {
+			week = w + " week ";
+		}
+		if (w == 0) {
+			week = "";
+		}
+
+		if (d > 1) {
+			day = d + " days ";
+		}
+		if (d == 1) {
+			day = d + " day ";
+		}
+		if (d == 0) {
+			hour = "";
+		}
+
+		if (h > 1) {
+			hour = h + " hours ";
+		}
+		if (h == 1) {
+			hour = h + " hour ";
+		}
+		if (h == 0) {
+			hour = "";
+		}
+
+		if (m > 1) {
+			minute = m + " minutes ";
+		}
+		if (m == 1) {
+			minute = m + " minute ";
+		}
+		if (m == 0) {
+			minute = "";
+		}
+
+		if (s > 1) {
+			second = s + " seconds";
+		}
+		if (s == 1) {
+			second = s + " second";
+		}
+		if (s == 0) {
+			second = "";
+		}
+
+		if (c > 5) {
+			second = s + " seconds";
+		}
+		if (c == 5) {
+			second = ChatColor.AQUA + "" + s + " seconds";
+		}
+		if (c == 4) {
+			second = ChatColor.GREEN + "" + s + " seconds";
+		}
+		if (c == 3) {
+			second = ChatColor.YELLOW + "" + s + " seconds";
+		}
+		if (c == 2) {
+			second = ChatColor.GOLD + "" + s + " seconds";
+		}
+		if (c == 1) {
+			second = ChatColor.RED + "" + s + " second";
+		}
+		if (c == 0) {
+			second = ChatColor.LIGHT_PURPLE + "TIME UP!";
+			getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+				@Override
+				public void run() {
+					BossBar.removeBarAll();
+				}
+			}, 60);
+		}
+
+		if (c >= 0) {
+			if (getServer().getPluginManager().isPluginEnabled("BarAPI") == true) {
+				BossBar.sendBarAll(Prefix.cd + week + day + hour + minute + second);
+			} else {
+				ActionBarAPI.sendToAll(Prefix.cd + week + day + hour + minute + second);
+			}
+		}
+
+	}
+
+}
